@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="sr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Mathrot: 100 Сличица</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Rubik', sans-serif;
+            background-color: #0f172a; 
+            touch-action: manipulation;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            overflow: hidden;
+        }
+
+        /* Glitch efekat */
+        .glitch-text {
+            text-shadow: 3px 3px 0px #7e22ce, -3px -3px 0px #06b6d4;
+            animation: glitch 3s infinite;
+        }
+
+        @keyframes glitch {
+            0% { text-shadow: 3px 3px 0px #7e22ce, -3px -3px 0px #06b6d4; }
+            50% { text-shadow: 3px -3px 0px #ef4444, -3px 3px 0px #eab308; }
+            100% { text-shadow: 3px 3px 0px #7e22ce, -3px -3px 0px #06b6d4; }
+        }
+
+        .btn-game {
+            transition: all 0.1s;
+            transform: translateY(0);
+            box-shadow: 0 6px 0 rgba(0,0,0,0.4);
+        }
+        .btn-game:active {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 rgba(0,0,0,0.4);
+        }
+
+        .card-pop { animation: popIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+        @keyframes popIn {
+            0% { transform: scale(0) rotate(-15deg); opacity: 0; }
+            80% { transform: scale(1.1) rotate(5deg); opacity: 1; }
+            100% { transform: scale(1) rotate(0deg); opacity: 1; }
+        }
+
+        .shake { animation: shake 0.4s ease-in-out; }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px) rotate(-5deg); }
+            75% { transform: translateX(5px) rotate(5deg); }
+        }
+
+        .pulse-heart { animation: heartBeat 1.5s infinite; }
+        @keyframes heartBeat {
+            0% { transform: scale(1); }
+            15% { transform: scale(1.3); }
+            30% { transform: scale(1); }
+            45% { transform: scale(1.3); }
+            100% { transform: scale(1); }
+        }
+
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        
+        .bg-pattern {
+            background-image: 
+                radial-gradient(#334155 1px, transparent 1px),
+                linear-gradient(to bottom, #0f172a, #1e1b4b);
+            background-size: 20px 20px, 100% 100%;
+        }
+
+        .timer-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #a855f7, #ec4899);
+            width: 100%;
+            transform-origin: left;
+            transition: width 1s linear;
+        }
+
+        /* SVG Stilovi */
+        .sticker-svg {
+            width: 100%;
+            height: 100%;
+            filter: drop-shadow(0px 4px 4px rgba(0,0,0,0.3));
+            transition: transform 0.2s;
+        }
+        .sticker-svg:hover {
+            transform: scale(1.1);
+        }
+
+        /* Varijacije okvira */
+        .border-classic { border-color: #64748b; background: radial-gradient(circle, #334155, #1e293b); }
+        .border-toxic { border-color: #84cc16; background: radial-gradient(circle, #3f6212, #14532d); box-shadow: 0 0 10px #84cc16; }
+        .border-golden { border-color: #eab308; background: radial-gradient(circle, #713f12, #422006); box-shadow: 0 0 15px #eab308; }
+        .border-glitch { border-color: #06b6d4; background: radial-gradient(circle, #1e3a8a, #172554); box-shadow: 0 0 15px #06b6d4; }
+    </style>
+</head>
+<body class="h-screen w-screen flex flex-col text-white bg-pattern">
+
+    <!-- MENU SCREEN -->
+    <div id="menu-screen" class="absolute inset-0 z-50 flex flex-col items-center justify-center p-6 bg-slate-900/95 backdrop-blur-sm">
+        <h1 class="text-6xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400 mb-2 glitch-text tracking-tighter text-center">MATHROT</h1>
+        <p class="text-slate-400 mb-8 font-bold uppercase tracking-[0.2em] text-xs bg-slate-800 px-4 py-1 rounded-full border border-slate-700">100 Brainrot Emojis</p>
+
+        <div class="grid gap-3 w-full max-w-sm">
+            <!-- Nivo 1 -->
+            <button onclick="startGame(1)" class="btn-game bg-green-500 w-full p-4 rounded-2xl border-b-8 border-green-700 flex justify-between items-center group hover:bg-green-400 relative overflow-hidden">
+                <div class="text-left z-10">
+                    <h3 class="text-2xl font-black italic">БРОЈЕВИ</h3>
+                    <p class="text-[10px] font-bold text-green-900 uppercase">Рачунање до 10</p>
+                </div>
+                <i class="fa-solid fa-calculator text-3xl text-white drop-shadow-md z-10"></i>
+            </button>
+
+            <!-- Nivo 2 -->
+            <button onclick="startGame(2)" class="btn-game bg-yellow-400 w-full p-4 rounded-2xl border-b-8 border-yellow-600 flex justify-between items-center group hover:bg-yellow-300 relative overflow-hidden text-yellow-900">
+                <div class="text-left z-10">
+                    <h3 class="text-2xl font-black italic">ПРИЧЕ</h3>
+                    <p class="text-[10px] font-bold text-yellow-800 uppercase">Текстуални задаци</p>
+                </div>
+                <i class="fa-solid fa-book-open text-3xl text-yellow-900 drop-shadow-md z-10"></i>
+            </button>
+
+            <!-- Nivo 3 -->
+            <button onclick="startGame(3)" class="btn-game bg-purple-500 w-full p-4 rounded-2xl border-b-8 border-purple-700 flex justify-between items-center group hover:bg-purple-400 relative overflow-hidden">
+                <div class="text-left z-10">
+                    <h3 class="text-2xl font-black italic">ЈЕДНАЧИНЕ</h3>
+                    <p class="text-[10px] font-bold text-purple-200 uppercase">Пронађи X</p>
+                </div>
+                <i class="fa-solid fa-puzzle-piece text-3xl text-white drop-shadow-md z-10"></i>
+            </button>
+        </div>
+
+        <button onclick="toggleGallery()" class="mt-8 bg-slate-800 px-8 py-4 rounded-full border-2 border-slate-600 text-white font-bold hover:bg-slate-700 flex items-center gap-3 shadow-lg btn-game">
+            <i class="fa-solid fa-images text-pink-400 text-xl"></i> 
+            <span class="text-lg">АЛБУМ</span> 
+            <span id="menu-progress" class="bg-pink-500 text-white text-sm font-black px-3 py-1 rounded-full">0/100</span>
+        </button>
+    </div>
+
+    <!-- GAME UI -->
+    <div id="game-ui" class="hidden flex flex-col z-20 shadow-2xl relative">
+        <div class="h-20 flex justify-between items-center px-4 bg-slate-800 border-b-4 border-slate-700">
+            <button onclick="showMenu()" class="w-12 h-12 rounded-xl bg-slate-700 text-slate-400 hover:bg-slate-600 hover:text-white flex items-center justify-center transition-colors border-b-4 border-slate-900 active:border-b-0 active:translate-y-1">
+                <i class="fa-solid fa-house text-xl"></i>
+            </button>
+            <div class="flex gap-2" id="lives-container"></div>
+            <div class="flex flex-col items-end">
+                <span class="text-[10px] text-slate-400 font-bold uppercase tracking-widest">НИВО</span>
+                <span id="current-lvl-num" class="text-2xl font-black text-white leading-none text-shadow-sm">1</span>
+            </div>
+        </div>
+        <!-- Timer Bar -->
+        <div class="w-full h-3 bg-slate-900">
+            <div id="timer-bar" class="timer-bar"></div>
+        </div>
+    </div>
+
+    <!-- GAME AREA -->
+    <div id="game-area" class="hidden flex-1 flex flex-col items-center justify-center p-4 relative w-full max-w-lg mx-auto">
+        <!-- Question Card -->
+        <div class="w-full bg-white rounded-3xl p-8 mb-8 shadow-[0_15px_0_rgba(0,0,0,0.3)] border-4 border-slate-300 relative overflow-hidden text-center flex flex-col items-center justify-center min-h-[240px]">
+            <div class="absolute top-0 left-0 w-full h-4 bg-gradient-to-r from-purple-500 to-pink-500"></div>
+            
+            <p class="relative z-10 text-slate-400 font-bold uppercase tracking-widest text-xs mb-4 bg-slate-100 px-3 py-1 rounded-full" id="question-hint">ИЗРАЧУНАЈ</p>
+            
+            <div id="question-display" class="relative z-10 text-slate-800 font-black leading-tight text-4xl">
+                <!-- Pitanje ide ovde -->
+            </div>
+        </div>
+
+        <div id="answers-container" class="grid grid-cols-2 gap-4 w-full"></div>
+        <div id="feedback-msg" class="h-10 mt-6 font-black text-3xl opacity-0 transition-all text-center tracking-widest scale-0">...</div>
+    </div>
+
+    <!-- REWARD MODAL -->
+    <div id="reward-screen" class="hidden absolute inset-0 bg-black/95 z-[80] flex flex-col items-center justify-center p-6 backdrop-blur-md">
+        <!-- Pozadinski sjaj -->
+        <div class="absolute inset-0 flex items-center justify-center overflow-hidden -z-10">
+             <div class="w-[600px] h-[600px] bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur-[100px] animate-pulse opacity-40"></div>
+        </div>
+
+        <h2 class="text-6xl font-black text-white mb-4 glitch-text" id="msg-correct">ТАЧНО!</h2>
+        
+        <div id="reward-card" class="card-pop w-72 aspect-square bg-slate-800 rounded-3xl p-6 flex flex-col items-center border-4 border-purple-500 shadow-[0_0_50px_rgba(168,85,247,0.5)] mb-10 relative">
+            <div id="reward-badge" class="absolute -top-4 -right-4 bg-green-500 text-white text-sm font-black px-4 py-1 rounded-full shadow-lg border-4 border-slate-900 transform rotate-12">НОВО!</div>
+            
+            <!-- SVG Container -->
+            <div id="reward-img-container" class="w-full h-full bg-slate-700/50 rounded-2xl mb-4 relative flex items-center justify-center p-4 shadow-inner">
+                <!-- SVG goes here -->
+            </div>
+
+            <div class="text-center w-full">
+                <p id="reward-rarity" class="text-[10px] uppercase font-bold tracking-[0.3em] text-slate-400 mb-1">BRAINROT</p>
+                <p id="reward-name" class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white to-slate-300 truncate">Ime Sličice</p>
+            </div>
+        </div>
+
+        <button onclick="nextQuestion()" class="btn-game w-full max-w-xs bg-green-500 text-white py-5 rounded-2xl text-3xl font-black border-b-8 border-green-700 flex items-center justify-center gap-4 hover:bg-green-400">
+            ДАЉЕ <i class="fa-solid fa-arrow-right"></i>
+        </button>
+    </div>
+
+    <!-- GAME OVER -->
+    <div id="game-over-modal" class="hidden absolute inset-0 bg-red-900/95 z-[90] flex flex-col items-center justify-center p-6 backdrop-blur-xl">
+        <i class="fa-solid fa-skull-crossbones text-red-500 text-9xl mb-6 animate-bounce drop-shadow-xl"></i>
+        <h2 class="text-5xl font-black text-white mb-2 glitch-text">КРАЈ ИГРЕ</h2>
+        <p class="text-red-200 font-bold mb-8 uppercase tracking-widest">Нестало је живота</p>
+        
+        <div class="bg-black/40 p-6 rounded-2xl mb-8 text-center w-full max-w-xs border-2 border-red-500/30">
+            <p class="text-slate-400 text-xs uppercase font-bold tracking-widest mb-2">САКУПЉЕНО СЛИЧИЦА</p>
+            <p class="text-6xl font-black text-white" id="game-over-score">0</p>
+        </div>
+        <button onclick="showMenu()" class="btn-game w-full max-w-xs bg-blue-600 text-white py-4 rounded-2xl text-xl font-black border-b-8 border-blue-800 hover:bg-blue-500">
+            НАЗАД У МЕНИ
+        </button>
+    </div>
+
+    <!-- ALBUM (z-index povecan na 60 da bude preko menija) -->
+    <div id="album-modal" class="hidden fixed inset-0 bg-slate-900 z-[60] flex flex-col">
+        <div class="p-4 bg-slate-800 border-b border-slate-700 flex justify-between items-center shadow-lg z-10">
+            <div>
+                <h2 class="text-2xl font-black text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-400">BRAINROT АЛБУМ</h2>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider">Sakupi svih 100!</p>
+            </div>
+            <button onclick="toggleGallery()" class="w-12 h-12 rounded-full bg-slate-700 text-white flex items-center justify-center hover:bg-red-500 transition-colors shadow-lg border-2 border-slate-600"><i class="fa-solid fa-xmark text-xl"></i></button>
+        </div>
+        <div id="stickers-grid" class="flex-1 overflow-y-auto p-4 grid grid-cols-4 gap-3 content-start pb-24 bg-pattern"></div>
+    </div>
+
+    <!-- ZOOM -->
+    <div id="zoom-modal" class="hidden fixed inset-0 bg-black/95 z-[100] flex flex-col items-center justify-center p-6 backdrop-blur-sm" onclick="closeZoom()">
+        <div class="relative w-full max-w-sm p-4 rounded-3xl border-4 transform scale-100 transition-transform" id="zoom-card" onclick="event.stopPropagation()">
+            <button onclick="closeZoom()" class="absolute -top-5 -right-5 bg-red-500 text-white w-12 h-12 rounded-full border-4 border-slate-900 z-10 font-bold text-xl shadow-lg hover:scale-110 transition-transform">X</button>
+            <div id="zoom-img-container" class="rounded-2xl overflow-hidden aspect-square w-full mb-4 flex items-center justify-center p-6 shadow-inner bg-black/20">
+                <!-- SVG goes here -->
+            </div>
+            <div class="text-center pb-2">
+                <h3 id="zoom-name" class="text-3xl font-black text-white mb-1 tracking-tight drop-shadow-md">Name</h3>
+                <p id="zoom-rarity" class="text-white text-xs uppercase tracking-[0.3em] font-bold bg-white/20 px-2 py-1 rounded-full inline-block">Rare</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- BRAINROT SVGs (EMOJI STYLE) ---
+        function getBrainrotSvg(id) {
+            const baseId = id % 25; // 25 unique bases
+            const variant = Math.floor(id / 25); // 0=Classic, 1=Toxic, 2=Gold, 3=Glitch
+            
+            // Colors based on variant
+            let colors = {
+                skin: "#fcd34d", primary: "#3b82f6", secondary: "#ef4444", 
+                outline: "black", bg: "none"
+            };
+
+            if (variant === 1) { // Toxic
+                colors = { skin: "#bef264", primary: "#84cc16", secondary: "#15803d", outline: "#1a2e05", bg: "#ecfccb" };
+            } else if (variant === 2) { // Gold
+                colors = { skin: "#fde047", primary: "#eab308", secondary: "#a16207", outline: "#422006", bg: "#fef9c3" };
+            } else if (variant === 3) { // Glitch
+                colors = { skin: "#a5f3fc", primary: "#06b6d4", secondary: "#db2777", outline: "#1e3a8a", bg: "#cffafe" };
+            }
+
+            // Definicije filtera i gradijenata
+            const defs = `
+                <defs>
+                    <filter id="glow-${id}" x="-20%" y="-20%" width="140%" height="140%">
+                        <feGaussianBlur stdDeviation="2" result="blur"/>
+                        <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                    </filter>
+                    <linearGradient id="grad-${id}" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" style="stop-color:${colors.skin};stop-opacity:1" />
+                        <stop offset="100%" style="stop-color:${colors.primary};stop-opacity:1" />
+                    </linearGradient>
+                </defs>
+            `;
+            
+            let content = '';
+            const sw = 1.5; // Stroke width
+            
+            // Emoji Base Shape helpers
+            const circle = (cx, cy, r, fill) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}" stroke="${colors.outline}" stroke-width="${sw}"/>`;
+            const rect = (x, y, w, h, fill, r=0) => `<rect x="${x}" y="${y}" width="${w}" height="${h}" rx="${r}" fill="${fill}" stroke="${colors.outline}" stroke-width="${sw}"/>`;
+            const path = (d, fill) => `<path d="${d}" fill="${fill}" stroke="${colors.outline}" stroke-width="${sw}"/>`;
+            const simpleCircle = (cx, cy, r, fill) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${fill}"/>`; // No stroke for eyes
+
+            switch(baseId) {
+                case 0: // Skibidi
+                    content = rect(15, 30, 34, 24, "white", 4) + rect(10, 24, 44, 6, "white", 2) + circle(32, 16, 12, colors.skin) + simpleCircle(28, 14, 2, "black") + simpleCircle(36, 14, 2, "black") + path("M 28 20 Q 32 24 36 20", "none");
+                    break;
+                case 1: // Sigma
+                    content = rect(18, 14, 28, 36, colors.skin, 6) + path("M 18 30 L 46 30 L 32 46 Z", "rgba(0,0,0,0.1)") + rect(22, 22, 6, 3, "black") + rect(36, 22, 6, 3, "black") + path("M 24 38 Q 32 42 40 38", "none") + path("M 18 14 L 46 14 L 46 20 L 18 20 Z", "#1e293b"); 
+                    break;
+                case 2: // Grimace
+                    content = path("M 16 50 Q 8 20 20 10 Q 32 -5 44 10 Q 56 20 48 50 Z", "#9333ea") + simpleCircle(24, 22, 4, "white") + simpleCircle(40, 22, 4, "white") + simpleCircle(24, 22, 1.5, "black") + simpleCircle(40, 22, 1.5, "black") + path("M 26 36 Q 32 42 38 36", "none");
+                    break;
+                case 3: // Amogus
+                    content = path("M 18 54 L 18 20 Q 18 4 32 4 Q 46 4 46 20 L 46 54 L 38 54 L 38 42 L 26 42 L 26 54 Z", colors.secondary) + rect(28, 14, 20, 12, "#bfdbfe", 5);
+                    break;
+                case 4: // Capybara
+                    content = rect(12, 24, 40, 24, "#a87142", 8) + rect(38, 24, 14, 12, "#78350f", 4) + simpleCircle(46, 28, 1.5, "black") + rect(46, 32, 4, 1, "black");
+                    break;
+                case 5: // Shrek
+                    content = circle(32, 32, 18, "#84cc16") + path("M 12 30 L 4 26 L 14 20 Z", "#84cc16") + path("M 52 30 L 60 26 L 50 20 Z", "#84cc16") + simpleCircle(26, 28, 3, "white") + simpleCircle(38, 28, 3, "white") + simpleCircle(26, 28, 1, "black") + simpleCircle(38, 28, 1, "black");
+                    break;
+                case 6: // Peppa
+                    content = path("M 12 30 Q 12 10 32 10 L 42 10 Q 55 10 55 25 Q 55 40 40 40 L 32 40 Q 12 40 12 30 Z", "#fda4af") + simpleCircle(54, 20, 6, "#fda4af") + simpleCircle(52, 18, 2, "#be185d") + simpleCircle(56, 18, 2, "#be185d") + simpleCircle(28, 20, 3, "white") + simpleCircle(36, 20, 3, "white") + simpleCircle(28, 20, 1, "black") + simpleCircle(36, 20, 1, "black");
+                    break;
+                case 7: // Freddy
+                    content = circle(32, 34, 16, "#78350f") + circle(18, 18, 6, "#78350f") + circle(46, 18, 6, "#78350f") + rect(22, 6, 20, 12, "black") + rect(18, 18, 28, 4, "black") + simpleCircle(26, 30, 2, "#3b82f6") + simpleCircle(38, 30, 2, "#3b82f6");
+                    break;
+                case 8: // Pomni
+                    content = circle(32, 34, 14, "white") + path("M 32 20 L 12 6 L 28 8 Z", "#ef4444") + path("M 32 20 L 52 6 L 36 8 Z", "#3b82f6") + simpleCircle(27, 32, 2.5, "black") + simpleCircle(37, 32, 2.5, "black") + path("M 28 40 Q 32 44 36 40", "none");
+                    break;
+                case 9: // Creeper
+                    content = rect(14, 14, 36, 36, "#22c55e", 4) + rect(20, 22, 8, 8, "black") + rect(36, 22, 8, 8, "black") + rect(28, 32, 8, 10, "black") + rect(24, 38, 4, 8, "black") + rect(36, 38, 4, 8, "black");
+                    break;
+                case 10: // Camera Man
+                    content = rect(22, 32, 20, 20, "black") + rect(14, 14, 36, 18, "#e2e8f0", 2) + circle(32, 23, 6, "#334155");
+                    break;
+                case 11: // TV Man
+                    content = rect(24, 32, 16, 20, "black") + rect(10, 8, 44, 24, "#1e293b", 2) + rect(14, 12, 36, 16, "#7e22ce");
+                    break;
+                case 12: // Moai
+                    content = path("M 22 10 L 42 10 L 42 50 L 36 50 L 32 54 L 24 50 L 22 50 Q 12 30 22 10 Z", "#64748b") + rect(26, 20, 12, 4, "#334155") + rect(28, 40, 8, 4, "#334155");
+                    break;
+                case 13: // Roblox Noob
+                    content = rect(20, 28, 24, 20, "#3b82f6") + rect(20, 10, 24, 18, "#fde047") + rect(8, 28, 12, 18, "#fde047") + rect(44, 28, 12, 18, "#fde047") + rect(20, 48, 10, 10, "#84cc16") + rect(34, 48, 10, 10, "#84cc16");
+                    break;
+                case 14: // Doge
+                    content = circle(32, 32, 20, "#fcd34d") + path("M 16 16 L 24 24 L 12 32 Z", "#fcd34d") + path("M 48 16 L 40 24 L 52 32 Z", "#fcd34d") + simpleCircle(24, 30, 3, "black") + simpleCircle(40, 30, 3, "black") + circle(32, 38, 4, "black");
+                    break;
+                case 15: // Huggy Wuggy
+                    content = path("M 16 50 L 16 14 Q 32 0 48 14 L 48 50 Z", "#2563eb") + path("M 20 36 Q 32 46 44 36", "#ef4444") + simpleCircle(24, 24, 4, "white") + simpleCircle(40, 24, 4, "white") + simpleCircle(24, 24, 1.5, "black") + simpleCircle(40, 24, 1.5, "black");
+                    break;
+                case 16: // Maxwell
+                    content = rect(14, 28, 36, 20, "white", 8) + path("M 14 28 L 14 16 L 24 28 Z", "white") + path("M 50 28 L 50 16 L 40 28 Z", "white") + rect(14, 28, 36, 10, "black") + simpleCircle(24, 34, 2, "white") + simpleCircle(40, 34, 2, "white");
+                    break;
+                case 17: // Banana Cat
+                    content = path("M 32 4 Q 50 4 50 32 Q 50 60 32 60 Q 14 60 14 32 Q 14 4 32 4 Z", "#fde047") + simpleCircle(26, 24, 3, "black") + simpleCircle(38, 24, 3, "black") + path("M 30 32 Q 32 34 34 32", "none");
+                    break;
+                case 18: // Smurf Cat
+                    content = path("M 32 8 Q 54 8 54 32 L 54 56 L 10 56 L 10 32 Q 10 8 32 8 Z", "#3b82f6") + rect(10, 32, 44, 24, "white") + simpleCircle(24, 26, 4, "black") + simpleCircle(40, 26, 4, "black");
+                    break;
+                case 19: // Wednesday
+                    content = rect(22, 18, 20, 26, "#fcd34d", 8) + path("M 22 18 L 22 56 L 10 56 L 10 18 Z", "black") + path("M 42 18 L 42 56 L 54 56 L 54 18 Z", "black") + simpleCircle(28, 28, 2, "black") + simpleCircle(36, 28, 2, "black");
+                    break;
+                case 20: // Nerd
+                    content = circle(32, 32, 20, "#facc15") + rect(18, 24, 12, 8, "white", 2) + rect(34, 24, 12, 8, "white", 2) + rect(22, 24, 20, 2, "black") + rect(28, 38, 8, 2, "black");
+                    break;
+                case 21: // Skull
+                    content = circle(32, 24, 16, "#e2e8f0") + rect(22, 36, 20, 12, "#e2e8f0", 4) + simpleCircle(26, 24, 5, "black") + simpleCircle(38, 24, 5, "black") + rect(28, 32, 8, 6, "black");
+                    break;
+                case 22: // Clown
+                    content = circle(32, 32, 18, "white") + simpleCircle(32, 32, 5, "#ef4444") + simpleCircle(14, 32, 6, "#ef4444") + simpleCircle(50, 32, 6, "#ef4444") + path("M 24 42 Q 32 50 40 42", "none");
+                    break;
+                case 23: // Fire
+                    content = path("M 32 60 Q 52 60 52 40 Q 52 20 32 4 Q 12 20 12 40 Q 12 60 32 60 Z", "#ef4444") + path("M 32 54 Q 42 54 42 42 Q 42 32 32 20 Q 22 32 22 42 Q 22 54 32 54 Z", "#facc15");
+                    break;
+                case 24: // Ghost
+                    content = path("M 16 54 L 16 24 Q 16 8 32 8 Q 48 8 48 24 L 48 54 L 40 48 L 32 54 L 24 48 L 16 54 Z", "white") + simpleCircle(24, 24, 3, "black") + simpleCircle(40, 24, 3, "black");
+                    break;
+            }
+            
+            return `<svg viewBox="0 0 64 64" class="sticker-svg">${defs}${content}</svg>`;
+        }
+
+        // --- GRAMATIKA (DEKLINACIJA) ---
+        function decline(number, forms) {
+            if (number === 1) return forms[0];
+            if (number >= 2 && number <= 4) return forms[1];
+            return forms[2];
+        }
+
+        // --- PODACI ---
+        const baseNames = [
+            "Скибиди", "Сигма", "Гримас", "Амогус", "Капибара", "Шрек", "Пепа", 
+            "Фреди", "Помни", "Крипер", "Камера Мен", "ТВ Мен", "Моаи", "Нуб", 
+            "Доџ", "Хаги", "Максвел", "Банана Мачка", "Штрумпф", "Среда", "Штребер", 
+            "Лобања", "Кловн", "Ватра", "Дух"
+        ];
+
+        // --- KONFIGURACIJA ---
+        const TOTAL_STICKERS = 100;
+        const MAX_LIVES = 5;
+        let lives = MAX_LIVES;
+        let unlockedIds = [];
+        let currentLevel = 1;
+        let currentProblem = {};
+        let timerInterval;
+        let isGameActive = false;
+
+        const stickerDB = [];
+        for(let i=0; i<TOTAL_STICKERS; i++) {
+            const baseIndex = i % 25;
+            const variant = Math.floor(i / 25);
+            let namePrefix = "";
+            let rarity = "COMMON";
+            let borderClass = "border-classic";
+
+            if (variant === 1) { namePrefix = "Токсични "; rarity = "RARE"; borderClass = "border-toxic"; }
+            else if (variant === 2) { namePrefix = "Златни "; rarity = "EPIC"; borderClass = "border-golden"; }
+            else if (variant === 3) { namePrefix = "Глич "; rarity = "LEGENDARY"; borderClass = "border-glitch"; }
+
+            stickerDB.push({
+                id: i,
+                svg: getBrainrotSvg(i),
+                name: namePrefix + baseNames[baseIndex],
+                rarity: rarity,
+                border: borderClass
+            });
+        }
+
+        function init() {
+            const saved = localStorage.getItem(`mathrot_100_final`);
+            if (saved) unlockedIds = JSON.parse(saved);
+            updateMenuProgress();
+            updateLivesUI();
+        }
+
+        function updateMenuProgress() {
+            document.getElementById('menu-progress').innerText = `${unlockedIds.length}/${TOTAL_STICKERS}`;
+        }
+
+        function showMenu() {
+            isGameActive = false;
+            clearInterval(timerInterval);
+            document.getElementById('menu-screen').classList.remove('hidden');
+            document.getElementById('game-ui').classList.add('hidden');
+            document.getElementById('game-area').classList.add('hidden');
+            document.getElementById('game-over-modal').classList.add('hidden');
+            updateMenuProgress();
+        }
+
+        function startGame(level) {
+            currentLevel = level;
+            lives = MAX_LIVES;
+            isGameActive = true;
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('game-ui').classList.remove('hidden');
+            document.getElementById('game-area').classList.remove('hidden');
+            document.getElementById('current-lvl-num').innerText = level;
+            
+            const hints = {1: "ИЗРАЧУНАЈ", 2: "ПАЖЉИВО ПРОЧИТАЈ", 3: "ПРОНАЂИ НЕПОЗНАТИ БРОЈ"};
+            document.getElementById('question-hint').innerText = hints[level];
+
+            updateLivesUI();
+            newProblem();
+        }
+
+        function getRandomInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+
+        function newProblem() {
+            if (!isGameActive) return;
+            
+            document.getElementById('feedback-msg').className = "h-10 mt-6 font-black text-3xl opacity-0 transition-all text-center tracking-widest scale-0";
+            
+            let ans, text, displayHTML;
+            let timeLimit = 15000;
+
+            if (currentLevel === 1) {
+                const op = Math.random() > 0.5 ? '+' : '-';
+                let n1, n2;
+                if (op === '+') { n1 = getRandomInt(0, 5); n2 = getRandomInt(0, 5); } 
+                else { n1 = getRandomInt(2, 10); n2 = getRandomInt(1, n1); }
+                ans = op === '+' ? n1 + n2 : n1 - n2;
+                displayHTML = `<span class="text-6xl md:text-8xl font-black tracking-tighter">${n1} <span class="text-purple-500">${op}</span> ${n2} = ?</span>`;
+            }
+            else if (currentLevel === 2) {
+                timeLimit = 60000; 
+                const names = ["Милица", "Лука", "Стефан", "Ана", "Марко", "Софија", "Вук", "Дуња"];
+                const itemTypes = [
+                    { root: "коцкиц", forms: ["коцкицу", "коцкице", "коцкица"] },
+                    { root: "сличиц", forms: ["сличицу", "сличице", "сличица"] },
+                    { root: "јабук", forms: ["јабуку", "јабуке", "јабука"] },
+                    { root: "бомбон", forms: ["бомбону", "бомбоне", "бомбона"] }
+                ];
+                const name = names[Math.floor(Math.random() * names.length)];
+                const item = itemTypes[Math.floor(Math.random() * itemTypes.length)];
+                
+                const start = getRandomInt(1, 6);
+                const add = getRandomInt(1, 4);
+                ans = start + add;
+                
+                const wordStart = decline(start, item.forms);
+                const wordAdd = decline(add, item.forms);
+                const wordAns = decline(ans, item.forms);
+
+                text = `<div class="bg-slate-50 p-4 rounded-xl shadow-inner mb-2"><span class="text-purple-600">${name}</span> има <span class="font-black text-slate-800">${start}</span> ${wordStart}.<br>Мама јој је дала још <span class="font-black text-slate-800">${add}</span> ${wordAdd}.</div><div class="mt-4 text-slate-500 text-sm font-bold uppercase tracking-widest">Питање:</div>Колико ${name} сада има <span class="text-purple-600 font-bold border-b-4 border-purple-200">${wordAns}</span>?`;
+                displayHTML = `<div class="text-xl md:text-2xl font-bold text-left leading-relaxed text-slate-700 w-full">${text}</div>`;
+            }
+            else if (currentLevel === 3) {
+                const type = Math.random() > 0.5 ? 'plus' : 'minus';
+                let a, b;
+                if (type === 'plus') {
+                    a = getRandomInt(1, 5); b = getRandomInt(a + 1, 10); ans = b - a;
+                    displayHTML = `<span class="text-6xl md:text-7xl font-black flex items-center gap-4"><div class="bg-purple-600 w-20 h-20 rounded-xl flex items-center justify-center text-white shadow-lg animate-pulse">?</div> + ${a} = ${b}</span>`;
+                } else {
+                    a = getRandomInt(5, 10); b = getRandomInt(1, a - 1); ans = a - b;
+                    displayHTML = `<span class="text-6xl md:text-7xl font-black flex items-center gap-4">${a} - <div class="bg-purple-600 w-20 h-20 rounded-xl flex items-center justify-center text-white shadow-lg animate-pulse">?</div> = ${b}</span>`;
+                }
+            }
+
+            currentProblem = { ans };
+            document.getElementById('question-display').innerHTML = displayHTML;
+            generateAnswers(ans);
+            startTimer(timeLimit);
+        }
+
+        function generateAnswers(correct) {
+            let options = [correct];
+            while(options.length < 4) {
+                let w = correct + getRandomInt(-3, 3);
+                if(w >= 0 && !options.includes(w)) options.push(w);
+            }
+            options.sort(() => Math.random() - 0.5);
+            
+            const cont = document.getElementById('answers-container');
+            cont.innerHTML = '';
+            options.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = "btn-game bg-slate-100 hover:bg-slate-200 text-slate-800 text-5xl font-black py-6 rounded-2xl border-b-8 border-slate-300 active:border-b-0 active:translate-y-1 transition-all";
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, btn);
+                cont.appendChild(btn);
+            });
+        }
+
+        function startTimer(ms) {
+            clearInterval(timerInterval);
+            const bar = document.getElementById('timer-bar');
+            bar.style.transition = 'none';
+            bar.style.width = '100%';
+            bar.offsetHeight;
+            bar.style.transition = `width ${ms}ms linear`;
+            bar.style.width = '0%';
+            
+            let end = Date.now() + ms;
+            timerInterval = setInterval(() => {
+                if(Date.now() >= end) handleTimeOut();
+            }, 100);
+        }
+
+        function checkAnswer(val, btn) {
+            if (!isGameActive) return;
+            clearInterval(timerInterval);
+            const allBtns = document.getElementById('answers-container').children;
+            for(let b of allBtns) b.onclick = null;
+
+            if (val === currentProblem.ans) {
+                btn.className = "bg-green-500 text-white text-5xl font-black py-6 rounded-2xl border-b-8 border-green-700 scale-95 transition-transform";
+                showFeedback("ТАЧНО!", true);
+                setTimeout(giveReward, 500);
+            } else {
+                btn.className = "bg-red-500 text-white text-5xl font-black py-6 rounded-2xl border-b-8 border-red-700 shake";
+                showFeedback("НЕТАЧНО!", false);
+                loseLife();
+            }
+        }
+
+        function handleTimeOut() {
+            if (!isGameActive) return;
+            showFeedback("ИСТЕКЛО ВРЕМЕ!", false);
+            loseLife();
+        }
+
+        function loseLife() {
+            lives--;
+            updateLivesUI();
+            if(lives <= 0) {
+                isGameActive = false;
+                setTimeout(() => {
+                    document.getElementById('game-over-modal').classList.remove('hidden');
+                    document.getElementById('game-over-score').innerText = unlockedIds.length;
+                }, 1000);
+            } else {
+                setTimeout(newProblem, 1500);
+            }
+        }
+
+        function updateLivesUI() {
+            const c = document.getElementById('lives-container');
+            c.innerHTML = '';
+            for(let i=0; i<MAX_LIVES; i++) {
+                const h = document.createElement('i');
+                h.className = i < lives 
+                    ? "fa-solid fa-heart text-red-500 text-2xl pulse-heart drop-shadow-md" 
+                    : "fa-solid fa-heart text-slate-700 text-2xl";
+                c.appendChild(h);
+            }
+        }
+
+        function showFeedback(txt, good) {
+            const el = document.getElementById('feedback-msg');
+            el.innerText = txt;
+            el.className = `h-10 mt-6 font-black text-3xl transition-all text-center tracking-widest scale-100 ${good ? 'text-green-500 glitch-text' : 'text-red-500'}`;
+            el.style.opacity = "1";
+        }
+
+        function giveReward() {
+            const missing = stickerDB.filter(s => !unlockedIds.includes(s.id));
+            let r, isNew = false;
+            
+            if(missing.length > 0) {
+                if (Math.random() < 0.6) {
+                    r = missing[Math.floor(Math.random() * missing.length)];
+                    unlockedIds.push(r.id);
+                    localStorage.setItem(`mathrot_100_final`, JSON.stringify(unlockedIds));
+                    isNew = true;
+                } else {
+                    r = stickerDB[Math.floor(Math.random() * stickerDB.length)];
+                }
+            } else {
+                r = stickerDB[Math.floor(Math.random() * stickerDB.length)];
+            }
+            
+            const modal = document.getElementById('reward-screen');
+            document.getElementById('reward-img-container').innerHTML = r.svg;
+            document.getElementById('reward-name').innerText = r.name;
+            document.getElementById('reward-rarity').innerText = r.rarity;
+            
+            // Postavi boju kartice prema raritetu
+            const card = document.getElementById('reward-card');
+            card.className = `card-pop w-72 aspect-square rounded-3xl p-6 flex flex-col items-center border-4 mb-10 relative ${r.border}`;
+            
+            const badge = document.getElementById('reward-badge');
+            if (isNew) {
+                badge.innerText = "НОВО!";
+                badge.className = "absolute -top-4 -right-4 bg-green-500 text-white text-sm font-black px-4 py-1 rounded-full shadow-lg border-4 border-slate-900 transform rotate-12 animate-pulse";
+            } else {
+                badge.innerText = "ДУПЛИКАТ";
+                badge.className = "absolute -top-4 -right-4 bg-slate-500 text-white text-sm font-black px-4 py-1 rounded-full shadow-lg border-4 border-slate-900 transform rotate-12";
+            }
+            
+            modal.classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            document.getElementById('reward-screen').classList.add('hidden');
+            newProblem();
+        }
+
+        function toggleGallery() {
+            const m = document.getElementById('album-modal');
+            if(m.classList.contains('hidden')) { m.classList.remove('hidden'); renderGallery(); }
+            else m.classList.add('hidden');
+        }
+
+        function renderGallery() {
+            const g = document.getElementById('stickers-grid');
+            g.innerHTML = '';
+            
+            stickerDB.forEach(s => {
+                const unlocked = unlockedIds.includes(s.id);
+                const d = document.createElement('div');
+                if(unlocked) {
+                    d.className = `aspect-square rounded-2xl p-2 flex flex-col items-center justify-center relative cursor-pointer hover:scale-105 transition-all shadow-lg group ${s.border}`;
+                    d.innerHTML = `
+                        <div class="w-full h-full transform group-hover:scale-110 transition-transform duration-300">${s.svg}</div>
+                        <div class="absolute bottom-2 bg-black/60 text-[8px] font-bold text-center text-white px-2 py-0.5 rounded-full backdrop-blur-sm truncate max-w-[90%]">${s.name}</div>
+                    `;
+                    d.onclick = () => {
+                        document.getElementById('zoom-img-container').innerHTML = s.svg;
+                        document.getElementById('zoom-name').innerText = s.name;
+                        document.getElementById('zoom-rarity').innerText = s.rarity;
+                        document.getElementById('zoom-card').className = `relative w-full max-w-sm p-4 rounded-3xl border-4 transform scale-100 transition-transform ${s.border}`;
+                        document.getElementById('zoom-modal').classList.remove('hidden');
+                    };
+                } else {
+                    d.className = "aspect-square rounded-2xl bg-slate-800/40 border-2 border-slate-800 flex items-center justify-center opacity-50";
+                    d.innerHTML = '<i class="fa-solid fa-lock text-slate-600 text-3xl"></i><span class="absolute bottom-2 text-[10px] text-slate-600 font-bold">' + (s.id + 1) + '</span>';
+                }
+                g.appendChild(d);
+            });
+        }
+        function closeZoom() { document.getElementById('zoom-modal').classList.add('hidden'); }
+
+        init();
+    </script>
+</body>
+</html>
